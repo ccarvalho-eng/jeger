@@ -18,6 +18,7 @@ jobs:
         with:
           otp-version: ${{ matrix.otp }}
           rebar3-version: '3.23'
+      - run: epmd -daemon
       - run: rebar3 compile
       - run: rebar3 eunit
       - run: rebar3 dialyzer
