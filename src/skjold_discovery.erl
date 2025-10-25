@@ -56,26 +56,22 @@ discover({BaseIP, Start, End} = Range, Opts) ->
 %% @doc Format discovery results for display
 -spec format_results([map()]) -> string().
 format_results(Results) ->
-    Header = io_lib:format(
-        "~n~s~n~s~n~s~n",
-        [
-            "=" ++ lists:duplicate(70, $=),
-            "  SKJOLD DISCOVERY RESULTS",
-            "=" ++ lists:duplicate(70, $=)
-        ]
-    ),
+    Header = lists:flatten([
+        "\n", lists:duplicate(70, $=), "\n",
+        "  SKJOLD DISCOVERY RESULTS\n",
+        lists:duplicate(70, $=), "\n"
+    ]),
 
     Summary = io_lib:format(
-        "~nDiscovered: ~p host(s) with EPMD~n~n",
+        "\nDiscovered: ~p host(s) with EPMD\n\n",
         [length(Results)]
     ),
 
     Details = lists:map(fun format_host/1, Results),
 
-    Footer = io_lib:format(
-        "~n~s~n",
-        ["=" ++ lists:duplicate(70, $=)]
-    ),
+    Footer = lists:flatten([
+        "\n", lists:duplicate(70, $=), "\n"
+    ]),
 
     lists:flatten([Header, Summary, Details, Footer]).
 
@@ -95,7 +91,7 @@ format_host(#{host := Host, nodes := Nodes, discovered_at := Timestamp}) ->
 
     NodesInfo = case NodeCount of
         0 ->
-            "  └─ No nodes registered~n";
+            "  └─ No nodes registered\n";
         _ ->
             NodeLines = [format_node(N) || N <- Nodes],
             [

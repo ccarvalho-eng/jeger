@@ -158,7 +158,7 @@ run_discovery(Opts) ->
     case skjold_discovery:discover(Range, DiscoveryOpts) of
         {ok, Results} ->
             Output = skjold_discovery:format_results(Results),
-            io:format("~s~n", [Output]),
+            io:put_chars(Output),
             case length(Results) of
                 0 -> halt(1);
                 _ -> halt(0)
