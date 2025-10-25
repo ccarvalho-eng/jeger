@@ -1,9 +1,9 @@
 %%%-------------------------------------------------------------------
 %%% @doc
-%%% Command-line interface for Skjold pentesting tool.
+%%% Command-line interface for Jeger pentesting tool.
 %%% @end
 %%%-------------------------------------------------------------------
--module(skjold_cli).
+-module(jeger_cli).
 
 -export([main/1]).
 
@@ -155,9 +155,9 @@ run_discovery(Opts) ->
         verbose => Verbose
     },
 
-    case skjold_discovery:discover(Range, DiscoveryOpts) of
+    case jeger_discovery:discover(Range, DiscoveryOpts) of
         {ok, Results} ->
-            Output = skjold_discovery:format_results(Results),
+            Output = jeger_discovery:format_results(Results),
             io:put_chars(Output),
             case length(Results) of
                 0 -> halt(1);
@@ -178,17 +178,17 @@ print_banner() ->
     io:format("  ███████║██║  ██╗╚█████╔╝╚██████╔╝███████╗██████╔╝~n"),
     io:format("  ╚══════╝╚═╝  ╚═╝ ╚════╝  ╚═════╝ ╚══════╝╚═════╝ ~n"),
     io:format("~n"),
-    io:format("  Skjold - BEAM Node Discovery & Pentesting Tool~n"),
+    io:format("  Jeger - BEAM Node Discovery & Pentesting Tool~n"),
     io:format("  Nordic Shield for Erlang/Elixir Security~n"),
     io:format("~n").
 
 %% @private
 print_help() ->
     io:format("~n"),
-    io:format("Skjold - BEAM Node Discovery & Pentesting Tool~n"),
+    io:format("Jeger - BEAM Node Discovery & Pentesting Tool~n"),
     io:format("~n"),
     io:format("USAGE:~n"),
-    io:format("    skjold [OPTIONS]~n"),
+    io:format("    jeger [OPTIONS]~n"),
     io:format("~n"),
     io:format("OPTIONS:~n"),
     io:format("    -r, --range RANGE          IP range to scan (e.g., '192.168.1.1-254') [required]~n"),
@@ -199,16 +199,16 @@ print_help() ->
     io:format("~n"),
     io:format("EXAMPLES:~n"),
     io:format("    # Scan local network for Erlang nodes~n"),
-    io:format("    skjold -r 192.168.1.1-254~n"),
+    io:format("    jeger -r 192.168.1.1-254~n"),
     io:format("~n"),
     io:format("    # Scan with custom timeout and concurrency~n"),
-    io:format("    skjold -r 10.0.0.1-100 -t 2000 -c 100~n"),
+    io:format("    jeger -r 10.0.0.1-100 -t 2000 -c 100~n"),
     io:format("~n"),
     io:format("    # Quiet mode (results only)~n"),
-    io:format("    skjold -r 172.16.0.1-254 --quiet~n"),
+    io:format("    jeger -r 172.16.0.1-254 --quiet~n"),
     io:format("~n"),
     io:format("DESCRIPTION:~n"),
-    io:format("    Skjold (Norse: shield) discovers Erlang/Elixir nodes by scanning for~n"),
+    io:format("    Jeger (Norse: shield) discovers Erlang/Elixir nodes by scanning for~n"),
     io:format("    EPMD (Erlang Port Mapper Daemon) services on the network. It queries~n"),
     io:format("    EPMD to enumerate registered node names and their distribution ports.~n"),
     io:format("~n"),

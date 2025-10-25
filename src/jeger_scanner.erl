@@ -4,7 +4,7 @@
 %%% Provides concurrent scanning of IP ranges.
 %%% @end
 %%%-------------------------------------------------------------------
--module(skjold_scanner).
+-module(jeger_scanner).
 
 -export([
     scan_range/1,
@@ -122,9 +122,9 @@ spawn_scanners([Host | Rest], Collector, Timeout, Concurrency, Active) ->
 
 %% @private
 scan_host(Host, Timeout) ->
-    case skjold_epmd:check_epmd(Host, Timeout) of
+    case jeger_epmd:check_epmd(Host, Timeout) of
         {ok, available} ->
-            case skjold_epmd:query_names(Host, Timeout) of
+            case jeger_epmd:query_names(Host, Timeout) of
                 {ok, Nodes} ->
                     #{
                         host => Host,
@@ -174,5 +174,5 @@ generate_scanner_node() ->
     Timestamp = erlang:system_time(millisecond),
     Rand = rand:uniform(9999),
     list_to_atom(lists:flatten(
-        io_lib:format("skjold_scanner_~p_~p", [Timestamp, Rand])
+        io_lib:format("jeger_scanner_~p_~p", [Timestamp, Rand])
     )).

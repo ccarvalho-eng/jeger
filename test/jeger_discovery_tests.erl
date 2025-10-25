@@ -1,4 +1,4 @@
--module(skjold_discovery_tests).
+-module(jeger_discovery_tests).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -8,14 +8,14 @@
 
 discover_small_range_test() ->
     %% Test discovery on a small range
-    Result = skjold_discovery:discover({"192.168.255.", 1, 2}, #{timeout => 100, verbose => false}),
+    Result = jeger_discovery:discover({"192.168.255.", 1, 2}, #{timeout => 100, verbose => false}),
     ?assertMatch({ok, _}, Result),
     {ok, Hosts} = Result,
     ?assert(is_list(Hosts)).
 
 format_results_empty_test() ->
     %% Test formatting empty results
-    Output = skjold_discovery:format_results([]),
+    Output = jeger_discovery:format_results([]),
     ?assert(is_list(Output)),
     ?assert(length(Output) > 0).
 
@@ -31,7 +31,7 @@ format_results_with_nodes_test() ->
             discovered_at => erlang:system_time(second)
         }
     ],
-    Output = skjold_discovery:format_results(MockResults),
+    Output = jeger_discovery:format_results(MockResults),
     ?assert(is_list(Output)),
     ?assert(length(Output) > 0),
     %% Check that output contains key information

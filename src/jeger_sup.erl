@@ -1,9 +1,9 @@
 %%%-------------------------------------------------------------------
-%% @doc skjold top level supervisor.
+%% @doc jeger top level supervisor.
 %% @end
 %%%-------------------------------------------------------------------
 
--module(skjold_sup).
+-module(jeger_sup).
 
 -behaviour(supervisor).
 

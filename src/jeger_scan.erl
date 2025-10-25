@@ -4,7 +4,7 @@
 %%% Detects common misconfigurations and security issues.
 %%% @end
 %%%-------------------------------------------------------------------
--module(skjold_scan).
+-module(jeger_scan).
 
 -export([
     scan_node/3,
@@ -59,7 +59,7 @@ ensure_distributed(Cookie) ->
     case node() of
         nonode@nohost ->
             Rand = rand:uniform(99999),
-            ScannerNode = list_to_atom("skjold_scan_" ++ integer_to_list(Rand)),
+            ScannerNode = list_to_atom("jeger_scan_" ++ integer_to_list(Rand)),
             net_kernel:start([ScannerNode, shortnames]),
             erlang:set_cookie(node(), Cookie);
         _ ->

@@ -1,10 +1,10 @@
 %%%-------------------------------------------------------------------
 %%% @doc
-%%% Main discovery module for Skjold pentesting tool.
+%%% Main discovery module for Jeger pentesting tool.
 %%% Orchestrates EPMD scanning and node discovery operations.
 %%% @end
 %%%-------------------------------------------------------------------
--module(skjold_discovery).
+-module(jeger_discovery).
 
 -export([
     discover/1,
@@ -33,7 +33,7 @@ discover({BaseIP, Start, End} = Range, Opts) ->
 
     case Verbose of
         true ->
-            io:format("~n[*] Skjold Discovery Starting...~n"),
+            io:format("~n[*] Jeger Discovery Starting...~n"),
             io:format("[*] Target Range: ~s~p-~p~n", [BaseIP, Start, End]),
             io:format("[*] Scanning for EPMD services...~n~n");
         false ->
@@ -41,7 +41,7 @@ discover({BaseIP, Start, End} = Range, Opts) ->
     end,
 
     %% Scan for EPMD services
-    {ok, Results} = skjold_scanner:scan_range(Range, Opts),
+    {ok, Results} = jeger_scanner:scan_range(Range, Opts),
 
     case Verbose of
         true ->

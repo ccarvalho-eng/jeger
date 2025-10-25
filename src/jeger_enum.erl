@@ -1,10 +1,10 @@
 %%%-------------------------------------------------------------------
 %%% @doc
-%%% Node enumeration and fingerprinting for Skjold.
+%%% Node enumeration and fingerprinting for Jeger.
 %%% Gathers system information from discovered Erlang nodes.
 %%% @end
 %%%-------------------------------------------------------------------
--module(skjold_enum).
+-module(jeger_enum).
 
 -export([
     enumerate_node/3,
@@ -78,7 +78,7 @@ ensure_distributed(Cookie) ->
 
 generate_node_name() ->
     Rand = rand:uniform(99999),
-    list_to_atom("skjold_enum_" ++ integer_to_list(Rand)).
+    list_to_atom("jeger_enum_" ++ integer_to_list(Rand)).
 
 gather_info(TargetNode) ->
     #{

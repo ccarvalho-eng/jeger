@@ -7,7 +7,7 @@
 %%% Erlang node names and their distribution ports.
 %%% @end
 %%%-------------------------------------------------------------------
--module(skjold_epmd).
+-module(jeger_epmd).
 
 -export([
     query_names/1,

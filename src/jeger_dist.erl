@@ -1,10 +1,10 @@
 %%%-------------------------------------------------------------------
 %%% @doc
-%%% Distributed Erlang utilities for Skjold.
+%%% Distributed Erlang utilities for Jeger.
 %%% Handles node initialization without corrupting global state.
 %%% @end
 %%%-------------------------------------------------------------------
--module(skjold_dist).
+-module(jeger_dist).
 
 -export([
     ensure_distributed/1,
@@ -51,5 +51,5 @@ generate_node_name() ->
     Timestamp = erlang:system_time(millisecond),
     Rand = rand:uniform(99999),
     list_to_atom(lists:flatten(
-        io_lib:format("skjold_~p_~p", [Timestamp, Rand])
+        io_lib:format("jeger_~p_~p", [Timestamp, Rand])
     )).

