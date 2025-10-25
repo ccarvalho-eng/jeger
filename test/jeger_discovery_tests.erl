@@ -2,25 +2,18 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
-%%%===================================================================
-%%% Tests
-%%%===================================================================
-
 discover_small_range_test() ->
-    %% Test discovery on a small range
     Result = jeger_discovery:discover({"192.168.255.", 1, 2}, #{timeout => 100, verbose => false}),
     ?assertMatch({ok, _}, Result),
     {ok, Hosts} = Result,
     ?assert(is_list(Hosts)).
 
 format_results_empty_test() ->
-    %% Test formatting empty results
     Output = jeger_discovery:format_results([]),
     ?assert(is_list(Output)),
     ?assert(length(Output) > 0).
 
 format_results_with_nodes_test() ->
-    %% Test formatting results with mock data
     MockResults = [
         #{
             host => "192.168.1.1",
@@ -34,6 +27,23 @@ format_results_with_nodes_test() ->
     Output = jeger_discovery:format_results(MockResults),
     ?assert(is_list(Output)),
     ?assert(length(Output) > 0),
-    %% Check that output contains key information
     ?assert(string:str(Output, "192.168.1.1") > 0),
     ?assert(string:str(Output, "test@192.168.1.1") > 0).
+
+format_results_no_nodes_test() ->
+    MockResults = [
+        #{
+            host => "10.0.0.1",
+            epmd => available,
+            nodes => [],
+            discovered_at => erlang:system_time(second)
+        }
+    ],
+    Output = jeger_discovery:format_results(MockResults),
+    ?assert(is_list(Output)),
+    ?assert(string:str(Output, "10.0.0.1") > 0),
+    ?assert(string:str(Output, "No nodes registered") > 0).
+
+discover_with_verbose_option_test() ->
+    Result = jeger_discovery:discover({"192.168.255.", 1, 2}, #{timeout => 100, verbose => true}),
+    ?assertMatch({ok, _}, Result).
