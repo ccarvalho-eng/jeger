@@ -20,6 +20,7 @@
 
 -define(EPMD_PORT, 4369).
 -define(DEFAULT_TIMEOUT, 5000).
+-define(MAX_RESPONSE_SIZE, 1048576). % 1MB max response
 
 %% EPMD protocol request types
 -define(EPMD_NAMES_REQ, 110).      % 'n' - request for all registered names
@@ -57,15 +58,16 @@ query_names(Host) ->
 query_names(Host, Timeout) ->
     case gen_tcp:connect(Host, ?EPMD_PORT, [binary, {active, false}], Timeout) of
         {ok, Socket} ->
-            Request = <<?EPMD_NAMES_REQ>>,
-            case gen_tcp:send(Socket, Request) of
-                ok ->
-                    Result = receive_epmd_names(Socket, Timeout),
-                    gen_tcp:close(Socket),
-                    Result;
-                {error, Reason} ->
-                    gen_tcp:close(Socket),
-                    {error, Reason}
+            try
+                Request = <<?EPMD_NAMES_REQ>>,
+                case gen_tcp:send(Socket, Request) of
+                    ok ->
+                        receive_epmd_names(Socket, Timeout);
+                    {error, Reason} ->
+                        {error, Reason}
+                end
+            after
+                gen_tcp:close(Socket)
             end;
         {error, Reason} ->
             {error, Reason}
@@ -84,17 +86,18 @@ query_port(Host, NodeName, Timeout) when is_atom(NodeName) ->
 query_port(Host, NodeName, Timeout) ->
     case gen_tcp:connect(Host, ?EPMD_PORT, [binary, {active, false}], Timeout) of
         {ok, Socket} ->
-            NameBin = list_to_binary(NodeName),
-            NameLen = byte_size(NameBin),
-            Request = <<NameLen:16, ?EPMD_PORT_PLEASE2_REQ, NameBin/binary>>,
-            case gen_tcp:send(Socket, Request) of
-                ok ->
-                    Result = receive_epmd_port(Socket, Timeout),
-                    gen_tcp:close(Socket),
-                    Result;
-                {error, Reason} ->
-                    gen_tcp:close(Socket),
-                    {error, Reason}
+            try
+                NameBin = list_to_binary(NodeName),
+                NameLen = byte_size(NameBin),
+                Request = <<NameLen:16, ?EPMD_PORT_PLEASE2_REQ, NameBin/binary>>,
+                case gen_tcp:send(Socket, Request) of
+                    ok ->
+                        receive_epmd_port(Socket, Timeout);
+                    {error, Reason} ->
+                        {error, Reason}
+                end
+            after
+                gen_tcp:close(Socket)
             end;
         {error, Reason} ->
             {error, Reason}
@@ -108,8 +111,10 @@ query_port(Host, NodeName, Timeout) ->
 %% Parse EPMD names response
 receive_epmd_names(Socket, Timeout) ->
     case gen_tcp:recv(Socket, 0, Timeout) of
-        {ok, Data} ->
+        {ok, Data} when byte_size(Data) =< ?MAX_RESPONSE_SIZE ->
             parse_names_response(Data);
+        {ok, _Data} ->
+            {error, response_too_large};
         {error, Reason} ->
             {error, Reason}
     end.
