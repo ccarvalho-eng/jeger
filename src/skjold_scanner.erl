@@ -104,6 +104,8 @@ spawn_scanners(Hosts, Collector, Timeout, Concurrency, Active) when Active >= Co
     %% Wait for a slot to open
     receive
         {scanner_done} ->
+            spawn_scanners(Hosts, Collector, Timeout, Concurrency, Active - 1);
+        {'DOWN', _Ref, process, _Pid, _Reason} ->
             spawn_scanners(Hosts, Collector, Timeout, Concurrency, Active - 1)
     after
         Timeout * 2 ->
@@ -111,7 +113,7 @@ spawn_scanners(Hosts, Collector, Timeout, Concurrency, Active) when Active >= Co
     end;
 spawn_scanners([Host | Rest], Collector, Timeout, Concurrency, Active) ->
     Parent = self(),
-    spawn_link(fun() ->
+    spawn_monitor(fun() ->
         Result = scan_host(Host, Timeout),
         Collector ! {scan_result, Result},
         Parent ! {scanner_done}
