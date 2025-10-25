@@ -59,7 +59,8 @@ query_names(Host, Timeout) ->
     case gen_tcp:connect(Host, ?EPMD_PORT, [binary, {active, false}], Timeout) of
         {ok, Socket} ->
             try
-                Request = <<?EPMD_NAMES_REQ>>,
+                % EPMD NAMES_REQ requires 2-byte length prefix
+                Request = <<1:16, ?EPMD_NAMES_REQ>>,
                 case gen_tcp:send(Socket, Request) of
                     ok ->
                         receive_epmd_names(Socket, Timeout);
