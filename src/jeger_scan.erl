@@ -33,7 +33,7 @@ scan_node(Host, NodeName, Cookie) ->
     end.
 
 %% @doc Scan for vulnerabilities from enumeration data
--spec scan_vulnerabilities(map()) -> [map()].
+-spec scan_vulnerabilities(map()) -> [{node, term()} | {findings, [map()]}, ...].
 scan_vulnerabilities(#{node := Node, security := Security} = _EnumData) ->
     Findings = [],
     Findings1 = check_cookie_security(Security, Findings),

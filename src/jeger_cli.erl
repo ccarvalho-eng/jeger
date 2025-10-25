@@ -15,6 +15,7 @@
 %%%===================================================================
 
 %% @doc Main entry point for escript
+-dialyzer({no_return, main/1}).
 main(Args) ->
     case parse_args(Args) of
         {ok, #{help := true}} ->
@@ -155,17 +156,12 @@ run_discovery(Opts) ->
         verbose => Verbose
     },
 
-    case jeger_discovery:discover(Range, DiscoveryOpts) of
-        {ok, Results} ->
-            Output = jeger_discovery:format_results(Results),
-            io:put_chars(Output),
-            case length(Results) of
-                0 -> halt(1);
-                _ -> halt(0)
-            end;
-        {error, Reason} ->
-            io:format("Discovery failed: ~p~n", [Reason]),
-            halt(1)
+    {ok, Results} = jeger_discovery:discover(Range, DiscoveryOpts),
+    Output = jeger_discovery:format_results(Results),
+    io:put_chars(Output),
+    case length(Results) of
+        0 -> halt(1);
+        _ -> halt(0)
     end.
 
 %% @private
