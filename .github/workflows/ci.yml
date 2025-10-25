@@ -20,6 +20,9 @@ jobs:
           rebar3-version: '3.23'
       - run: epmd -daemon
       - run: rebar3 compile
+      - run: rebar3 lint
       - run: rebar3 xref
-      - run: rebar3 eunit
+      - run: rebar3 eunit --cover
+      - run: rebar3 cover --verbose
       - run: rebar3 dialyzer
+      - run: rebar3 edoc
