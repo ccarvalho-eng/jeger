@@ -171,15 +171,14 @@ run_discovery(Opts) ->
 %% @private
 print_banner() ->
     io:format("~n"),
-    io:format("  ███████╗██╗  ██╗     ██╗ ██████╗ ██╗     ██████╗ ~n"),
-    io:format("  ██╔════╝██║ ██╔╝     ██║██╔═══██╗██║     ██╔══██╗~n"),
-    io:format("  ███████╗█████╔╝      ██║██║   ██║██║     ██║  ██║~n"),
-    io:format("  ╚════██║██╔═██╗ ██   ██║██║   ██║██║     ██║  ██║~n"),
-    io:format("  ███████║██║  ██╗╚█████╔╝╚██████╔╝███████╗██████╔╝~n"),
-    io:format("  ╚══════╝╚═╝  ╚═╝ ╚════╝  ╚═════╝ ╚══════╝╚═════╝ ~n"),
+    io:format("     ██╗███████╗ ██████╗ ███████╗██████╗ ~n"),
+    io:format("     ██║██╔════╝██╔════╝ ██╔════╝██╔══██╗~n"),
+    io:format("     ██║█████╗  ██║  ███╗█████╗  ██████╔╝~n"),
+    io:format("██   ██║██╔══╝  ██║   ██║██╔══╝  ██╔══██╗~n"),
+    io:format("╚█████╔╝███████╗╚██████╔╝███████╗██║  ██║~n"),
+    io:format(" ╚════╝ ╚══════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝~n"),
     io:format("~n"),
-    io:format("  Jeger - BEAM Node Discovery & Pentesting Tool~n"),
-    io:format("  Nordic Shield for Erlang/Elixir Security~n"),
+    io:format("  BEAM Node Discovery & Pentesting Tool~n"),
     io:format("~n").
 
 %% @private
@@ -208,8 +207,8 @@ print_help() ->
     io:format("    jeger -r 172.16.0.1-254 --quiet~n"),
     io:format("~n"),
     io:format("DESCRIPTION:~n"),
-    io:format("    Jeger (Norse: shield) discovers Erlang/Elixir nodes by scanning for~n"),
-    io:format("    EPMD (Erlang Port Mapper Daemon) services on the network. It queries~n"),
+    io:format("    Jeger discovers Erlang/Elixir nodes by scanning for EPMD~n"),
+    io:format("    (Erlang Port Mapper Daemon) services on the network. It queries~n"),
     io:format("    EPMD to enumerate registered node names and their distribution ports.~n"),
     io:format("~n"),
     io:format("    This tool is intended for authorized security assessments and~n"),
