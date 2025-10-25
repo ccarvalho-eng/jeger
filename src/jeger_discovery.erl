@@ -58,7 +58,7 @@ discover({BaseIP, Start, End} = Range, Opts) ->
 format_results(Results) ->
     Header = lists:flatten([
         "\n", lists:duplicate(70, $=), "\n",
-        "  SKJOLD DISCOVERY RESULTS\n",
+        "  JEGER DISCOVERY RESULTS\n",
         lists:duplicate(70, $=), "\n"
     ]),
 
