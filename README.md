@@ -1,4 +1,6 @@
-# Jeger
+# Jæger
+
+> *Jæger* — Norwegian for "hunter." In Norse myth, the hunter stalks what others cannot see. In distributed systems, so must we.
 
 Erlang/Elixir node discovery and penetration testing toolkit.
 
