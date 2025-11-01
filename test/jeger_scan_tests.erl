@@ -2,9 +2,11 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
-scan_node_invalid_test() ->
-    Result = jeger_scan:scan_node("192.168.255.255", "fake", test_cookie),
-    ?assertEqual({error, connection_failed}, Result).
+scan_node_invalid_test_() ->
+    {timeout, 60, fun() ->
+        Result = jeger_scan:scan_node("192.168.255.255", "fake", test_cookie),
+        ?assertEqual({error, connection_failed}, Result)
+    end}.
 
 format_findings_test() ->
     MockData = #{

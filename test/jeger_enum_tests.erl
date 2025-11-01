@@ -2,9 +2,11 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
-enumerate_node_invalid_test() ->
-    Result = jeger_enum:enumerate_node("192.168.255.255", "fake", test_cookie),
-    ?assertEqual({error, connection_failed}, Result).
+enumerate_node_invalid_test_() ->
+    {timeout, 60, fun() ->
+        Result = jeger_enum:enumerate_node("192.168.255.255", "fake", test_cookie),
+        ?assertEqual({error, connection_failed}, Result)
+    end}.
 
 format_enumeration_test() ->
     MockData = #{

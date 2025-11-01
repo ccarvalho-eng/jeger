@@ -22,7 +22,8 @@
 -spec scan_node(string(), string(), atom()) -> {ok, map()} | {error, term()}.
 scan_node(Host, NodeName, Cookie) ->
     TargetNode = list_to_atom(NodeName ++ "@" ++ Host),
-    ensure_distributed(Cookie),
+    NameType = detect_name_type(Host),
+    ensure_distributed(Cookie, NameType),
 
     case net_adm:ping(TargetNode) of
         pong ->
@@ -55,16 +56,33 @@ format_findings(#{node := Node, findings := Findings}) ->
 %%% Internal functions
 %%%===================================================================
 
-ensure_distributed(Cookie) ->
+detect_name_type(Host) ->
+    case string:find(Host, ".") of
+        nomatch ->
+            case lists:member($., Host) of
+                false -> shortnames;
+                true -> longnames
+            end;
+        _ -> longnames
+    end.
+
+ensure_distributed(Cookie, NameType) ->
     case node() of
         nonode@nohost ->
-            Rand = rand:uniform(99999),
-            ScannerNode = list_to_atom("jeger_scan_" ++ integer_to_list(Rand)),
-            net_kernel:start([ScannerNode, shortnames]),
+            ScannerNode = generate_node_name(NameType),
+            net_kernel:start([ScannerNode, NameType]),
             erlang:set_cookie(node(), Cookie);
         _ ->
             erlang:set_cookie(node(), Cookie)
     end.
+
+generate_node_name(shortnames) ->
+    Rand = rand:uniform(99999),
+    list_to_atom("jeger_scan_" ++ integer_to_list(Rand));
+generate_node_name(longnames) ->
+    Rand = rand:uniform(99999),
+    {ok, Hostname} = inet:gethostname(),
+    list_to_atom("jeger_scan_" ++ integer_to_list(Rand) ++ "@" ++ Hostname).
 
 check_vulnerabilities(TargetNode, Cookie) ->
     Checks = [

